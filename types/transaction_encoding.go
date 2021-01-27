@@ -1,5 +1,8 @@
 package types
 
+import "math/big"
+
+/*
 import (
 	"fmt"
 	"math/big"
@@ -97,6 +100,7 @@ func (t *Transaction) MarshalWith(arena *fastrlp.Arena) *fastrlp.Value {
 
 	return vv
 }
+*/
 
 // deriveChainId derives the chain id from the given v parameter
 func DeriveChainId(v *big.Int) *big.Int {

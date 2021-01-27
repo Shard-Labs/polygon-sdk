@@ -6,10 +6,6 @@ import (
 	"fmt"
 
 	"github.com/0xPolygon/minimal/helper/hex"
-	"github.com/0xPolygon/minimal/helper/keccak"
-	"github.com/ethereum/go-ethereum/rlp"
-	"github.com/umbracle/fastrlp"
-	"golang.org/x/crypto/sha3"
 )
 
 // Header represents a block header in the Ethereum blockchain.
@@ -29,7 +25,7 @@ type Header struct {
 	ExtraData    HexBytes `json:"extraData" db:"extradata"`
 	MixHash      Hash     `json:"mixHash" db:"mixhash"`
 	Nonce        Nonce    `json:"nonce" db:"nonce"`
-	Hash         Hash
+	Hash         Hash     `rlp:"hash"`
 }
 
 func (h *Header) HasBody() bool {
@@ -60,8 +56,9 @@ func (n *Nonce) Scan(src interface{}) error {
 	return nil
 }
 
-var marshalArenaPool fastrlp.ArenaPool
+// var marshalArenaPool fastrlp.ArenaPool
 
+/*
 // ComputeHash computes the hash of the header
 func (h *Header) ComputeHash() *Header {
 	ar := marshalArenaPool.Get()
@@ -74,6 +71,7 @@ func (h *Header) ComputeHash() *Header {
 	keccak.DefaultKeccakPool.Put(hash)
 	return h
 }
+*/
 
 func (h *Header) Copy() *Header {
 	hh := new(Header)
@@ -89,6 +87,7 @@ type Body struct {
 	Uncles       []*Header
 }
 
+/*
 func (b *Body) UnmarshalRLP(p *fastrlp.Parser, v *fastrlp.Value) error {
 	tuple, err := v.GetElems()
 	if err != nil {
@@ -151,6 +150,7 @@ func (b *Body) MarshalWith(ar *fastrlp.Arena) *fastrlp.Value {
 
 	return vv
 }
+*/
 
 type Block struct {
 	Header       *Header
@@ -158,6 +158,7 @@ type Block struct {
 	Uncles       []*Header
 }
 
+/*
 func (b *Block) UnmarshalRLP(buf []byte) error {
 	p := &fastrlp.Parser{}
 	v, err := p.Parse(buf)
@@ -234,6 +235,7 @@ func (b *Block) MarshalWith(ar *fastrlp.Arena) *fastrlp.Value {
 	return vv
 
 }
+*/
 
 func (b *Block) Hash() Hash {
 	return b.Header.Hash
@@ -254,6 +256,7 @@ func (b *Block) Body() *Body {
 	}
 }
 
+/*
 func CalcUncleHash(uncles []*Header) Hash {
 	if len(uncles) == 0 {
 		return EmptyUncleHash
@@ -267,6 +270,7 @@ func rlpHash(x interface{}) (h Hash) {
 	hw.Sum(h[:0])
 	return h
 }
+*/
 
 func (b *Block) String() string {
 	str := fmt.Sprintf(`Block(#%v):`, b.Number())

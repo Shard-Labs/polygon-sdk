@@ -1,5 +1,6 @@
 package types
 
+/*
 import (
 	"fmt"
 
@@ -110,3 +111,4 @@ func (h *Header) MarshalWith(arena *fastrlp.Arena) *fastrlp.Value {
 
 	return vv
 }
+*/

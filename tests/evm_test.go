@@ -113,7 +113,17 @@ func rlpHashLogs(logs []*types.Log) (res types.Hash) {
 	}
 
 	ar := &fastrlp.Arena{}
-	v := r.MarshalLogsWith(ar)
+
+	var v *fastrlp.Value
+	if len(r.Logs) == 0 {
+		// There are no receipts, write the RLP null array entry
+		v = ar.NewNullArray()
+	} else {
+		v = ar.NewArray()
+		for _, log := range r.Logs {
+			v.Set(log.MarshalRLPWith(ar))
+		}
+	}
 
 	keccak.Keccak256Rlp(res[:0], v)
 	return

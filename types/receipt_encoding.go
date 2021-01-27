@@ -1,5 +1,6 @@
 package types
 
+/*
 import (
 	"fmt"
 
@@ -121,3 +122,4 @@ func (r *Receipt) MarshalLogsWith(a *fastrlp.Arena) *fastrlp.Value {
 	}
 	return logs
 }
+*/

@@ -30,6 +30,12 @@ ifeq (1,${PACKR})
 endif
 	@packr clean
 
+.PHONY: rlpgen
+rlpgen:
+	@echo "--> Rlp generation"
+	rlpgen --path ./types --package types --objs Header,Body,Block,Transaction,Log --output ./types/rlp_encoding.go
+	# rlpgen --path ./types --package types --objs Receipt --output ./types/rlp_receipt_encoding.go
+
 .PHONY: clean-ibft-dir
 clean-ibft-dir:
 	rm -rf ./.ibft1/blockchain ./.ibft1/consensus ./.ibft1/network ./.ibft1/trie

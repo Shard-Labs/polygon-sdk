@@ -1,9 +1,5 @@
 package types
 
-import (
-	"github.com/0xPolygon/minimal/helper/keccak"
-)
-
 type Transaction struct {
 	Nonce    uint64   `json:"nonce" db:"nonce"`
 	GasPrice HexBytes `json:"gasPrice" db:"gas_price"`
@@ -16,8 +12,8 @@ type Transaction struct {
 	R HexBytes `json:"r" db:"r"`
 	S HexBytes `json:"s" db:"s"`
 
-	Hash Hash
-	From Address
+	Hash Hash    `rlp:"hash"`
+	From Address `rlp:"-"`
 }
 
 func (t *Transaction) IsContractCreation() bool {
@@ -28,6 +24,7 @@ func (t *Transaction) GetGasPrice() []byte {
 	return t.GasPrice
 }
 
+/*
 // ComputeHash computes the hash of the transaction
 func (t *Transaction) ComputeHash() *Transaction {
 	ar := marshalArenaPool.Get()
@@ -40,6 +37,7 @@ func (t *Transaction) ComputeHash() *Transaction {
 	keccak.DefaultKeccakPool.Put(hash)
 	return t
 }
+*/
 
 func (t *Transaction) Copy() *Transaction {
 	tt := new(Transaction)

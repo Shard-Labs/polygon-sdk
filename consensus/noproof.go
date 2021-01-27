@@ -28,7 +28,6 @@ func (n *NoProof) Prepare(chain ChainReader, header *types.Header) error {
 
 // Seal seals the block
 func (n *NoProof) Seal(chain ChainReader, block *types.Block, ctx context.Context) (*types.Block, error) {
-	block.Header.ComputeHash()
 	return block, nil
 }
 

@@ -60,8 +60,7 @@ func (e *Eth) SendRawTransaction(input string) (interface{}, error) {
 		return nil, err
 	}
 
-	err = tx.UnmarshalRLP(p, v)
-	if err != nil {
+	if err = tx.UnmarshalRLPFrom(p, v); err != nil {
 		return nil, err
 	}
 
@@ -74,8 +73,6 @@ func (e *Eth) SendRawTransaction(input string) (interface{}, error) {
 	if err := e.d.minimal.Sealer.AddTx(tx); err != nil {
 		panic(err)
 	}
-
-	tx.ComputeHash()
 	return tx.Hash.String(), nil
 }
 
