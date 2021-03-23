@@ -418,6 +418,8 @@ func (sb *backend) VerifyHeader(chain consensus.ChainReader, header *types.Heade
 // Seal generates a new block for the given input block with the local miner's
 // seal place on top.
 func (sb *backend) Seal(chain consensus.ChainReader, block *types.Block, ctx context.Context) (*types.Block, error) {
+	sb.logger.Debug("seal", "number", block.Number())
+
 	// update the block header timestamp and signature and propose the block to core engine
 	header := block.Header
 	number := header.Number

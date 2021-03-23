@@ -55,6 +55,13 @@ type Blockchain struct {
 	agpMux sync.Mutex
 }
 
+func (b *Blockchain) CurrentBlock(full bool) *types.Block {
+	header, _ := b.CurrentHeader()
+	block, _ := b.GetBlock(header.Hash, header.Number, full)
+
+	return block
+}
+
 func (b *Blockchain) HasBadBlock(hash types.Hash) bool {
 	return false
 }
@@ -498,6 +505,9 @@ func (b *Blockchain) WriteBlocks(blocks []*types.Block) error {
 		b.UpdateGasPriceAvg(new(big.Int).SetUint64(header.GasUsed))
 	}
 
+	if h, ok := b.GetConsensus().(consensus.Handler); ok {
+		h.NewChainHead()
+	}
 	return nil
 }
 

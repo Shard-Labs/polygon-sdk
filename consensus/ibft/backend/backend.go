@@ -37,7 +37,7 @@ func New(config *ibft.Config, privateKey *ecdsa.PrivateKey, db storage.Storage, 
 	recentMessages, _ := lru.NewARC(inmemoryPeers)
 	knownMessages, _ := lru.NewARC(inmemoryMessages)
 	backend := &backend{
-		logger:           logger,
+		logger:           logger.Named("ibft"),
 		config:           config,
 		istanbulEventMux: new(event.TypeMux),
 		privateKey:       privateKey,

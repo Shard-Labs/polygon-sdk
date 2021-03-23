@@ -15,6 +15,8 @@ type handshakeService struct {
 }
 
 func (h *handshakeService) Hello(ctx context.Context, req *proto.HelloReq) (*empty.Empty, error) {
+
+	// wait for a handhsake message
 	h.s.handleConnUser(req.Id)
 	return &emptypb.Empty{}, nil
 }

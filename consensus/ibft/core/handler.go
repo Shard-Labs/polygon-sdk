@@ -1,6 +1,7 @@
 package core
 
 import (
+	"fmt"
 	"math/big"
 
 	"github.com/0xPolygon/minimal/consensus/ibft"
@@ -9,6 +10,7 @@ import (
 
 // Start implements core.Engine.Start
 func (c *core) Start() error {
+	fmt.Println("_ START ROUND _")
 	// Start a new round from last sequence + 1
 	c.startNewRound(types.Big0)
 
@@ -57,6 +59,7 @@ func (c *core) unsubscribeEvents() {
 }
 
 func (c *core) handleEvents() {
+	fmt.Println("_ HANDLE EVENTS _")
 	// Clear state
 	defer func() {
 		c.current = nil
@@ -74,6 +77,7 @@ func (c *core) handleEvents() {
 			// A real event arrived, process interesting content
 			switch ev := event.Data.(type) {
 			case ibft.RequestEvent:
+				fmt.Println("XXX")
 				r := &ibft.Request{
 					Proposal: ev.Proposal,
 				}

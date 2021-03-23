@@ -66,6 +66,7 @@ type Server struct {
 	host         host.Host
 	libp2pServer *libp2pgrpc.GRPCProtocol
 	addrs        []ma.Multiaddr
+	peerStore    *peerStore
 
 	// syncer protocol
 	syncer *protocol.Syncer
@@ -80,17 +81,17 @@ var dirPaths = []string{
 
 func NewServer(logger hclog.Logger, config *Config) (*Server, error) {
 	m := &Server{
-		logger: logger,
-		config: config,
-		// backends:   []protocol.Backend{},
+		logger:     logger,
+		config:     config,
 		chain:      config.Chain,
 		grpcServer: grpc.NewServer(),
+		peerStore:  &peerStore{},
 	}
 
 	m.logger.Info("Data dir", "path", config.DataDir)
 
 	// Generate all the paths in the dataDir
-	if err := setupDataDir(config.DataDir, dirPaths); err != nil {
+	if err := SetupDataDir(config.DataDir, dirPaths); err != nil {
 		return nil, fmt.Errorf("failed to create data directories: %v", err)
 	}
 
@@ -162,9 +163,32 @@ func NewServer(logger hclog.Logger, config *Config) (*Server, error) {
 
 	// register the libp2p GRPC endpoints
 	proto.RegisterHandshakeServer(m.libp2pServer.GetGRPCServer(), &handshakeService{s: m})
+	proto.RegisterRawServer(m.libp2pServer.GetGRPCServer(), &rawService{s: m})
 
 	m.libp2pServer.Serve()
+
+	if istanbul, ok := m.consensus.(consensus.Istanbul); ok {
+		istanbul.Start(m.blockchain, m.blockchain.CurrentBlock, m.blockchain.HasBadBlock)
+		m.consensus.(consensus.Handler).SetBroadcaster(m)
+	}
+
 	return m, nil
+}
+
+func (s *Server) Enqueue(id string, block *types.Block) {
+	// not sure what it does
+}
+
+type msgPeer struct {
+}
+
+func (s *Server) FindPeers(addrs map[types.Address]bool) map[types.Address]consensus.Peer {
+
+	fmt.Println("-- addrs --")
+	fmt.Println(addrs)
+
+	panic("Find peers")
+	return nil
 }
 
 func (s *Server) setupConsensus() error {
@@ -324,6 +348,7 @@ func (s *Server) Join(addr0 string) error {
 	}
 	clt := proto.NewHandshakeClient(conn)
 
+	// make auth with the peer
 	req := &proto.HelloReq{
 		Id: s.host.ID().String(),
 	}
@@ -383,7 +408,7 @@ func addPath(paths []string, path string, entries map[string]*Entry) []string {
 	return newpath
 }
 
-func setupDataDir(dataDir string, paths []string) error {
+func SetupDataDir(dataDir string, paths []string) error {
 	if err := createDir(dataDir); err != nil {
 		return fmt.Errorf("Failed to create data dir: (%s): %v", dataDir, err)
 	}

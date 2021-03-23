@@ -123,6 +123,12 @@ func (s *Syncer) syncPeerImpl() {
 }
 
 func (s *Syncer) HandleUser(peerID peer.ID, conn *grpc.ClientConn) {
+	s.peersLock.Lock()
+	if _, ok := s.peers[peerID]; !ok {
+		s.peersLock.Unlock()
+		return
+	}
+
 	fmt.Println("- new user -")
 
 	// watch for changes of the other node first
@@ -139,6 +145,7 @@ func (s *Syncer) HandleUser(peerID peer.ID, conn *grpc.ClientConn) {
 		status: status,
 	}
 	s.peers[peerID] = peer
+	s.peersLock.Unlock()
 
 	select {
 	case s.newPeerCh <- struct{}{}:

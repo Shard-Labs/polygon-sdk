@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package v1;
+
+option go_package = "/minimal/proto";
+
+import "google/protobuf/empty.proto";
+
+// right now is only used for ibft
+service Raw {
+    rpc RawMsg(RawMsgReq) returns (google.protobuf.Empty);
+}
+
+message RawMsgReq {
+    int64 code = 1;
+    string content = 2;
+}

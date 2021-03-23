@@ -7,8 +7,10 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"sync"
 
 	libp2pgrpc "github.com/0xPolygon/minimal/helper/grpc"
+	"github.com/0xPolygon/minimal/types"
 	"github.com/libp2p/go-libp2p"
 	"github.com/libp2p/go-libp2p-core/crypto"
 	"github.com/libp2p/go-libp2p-core/peer"
@@ -17,6 +19,24 @@ import (
 	ma "github.com/multiformats/go-multiaddr"
 	"google.golang.org/grpc"
 )
+
+type peerInfo struct {
+	id      string
+	conn    *grpc.ClientConn
+	address types.Address
+}
+
+type peerStore struct {
+	lock  sync.Mutex
+	peers []*peerInfo
+}
+
+func (p *peerStore) add(info *peerInfo) {
+	p.lock.Lock()
+	defer p.lock.Unlock()
+
+	p.peers = append(p.peers, info)
+}
 
 func (s *Server) setupLibP2P() error {
 	// read libp2p key
@@ -129,9 +149,5 @@ func (s *Server) AddPeerFromMultiAddrString(str string) (peer.ID, error) {
 }
 
 func (s *Server) dial(p peer.ID) (*grpc.ClientConn, error) {
-
-	fmt.Println("-- p --")
-	fmt.Println(p.String())
-
 	return s.libp2pServer.Dial(context.Background(), p, grpc.WithInsecure())
 }
