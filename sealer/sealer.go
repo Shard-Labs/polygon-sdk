@@ -32,6 +32,8 @@ func DefaultConfig() *Config {
 }
 
 type blockchainShim interface {
+	consensus.ChainReader
+
 	Header() *types.Header
 	WriteBlocks(blocks []*types.Block) error
 	SubscribeEvents() blockchain.Subscription
@@ -203,7 +205,7 @@ func (s *Sealer) seal(ctx context.Context) error {
 		ExtraData:  s.config.Extra,
 	}
 
-	if err := s.engine.Prepare(header); err != nil {
+	if err := s.engine.Prepare(s.blockchain, header); err != nil {
 		return err
 	}
 
@@ -247,7 +249,7 @@ func (s *Sealer) seal(ctx context.Context) error {
 
 	// Start the consensus sealing
 	s.logger.Debug("seal block", "num", block.Number())
-	block, err = s.engine.Seal(block, ctx)
+	block, err = s.engine.Seal(s.blockchain, block, ctx)
 	if err != nil {
 		return err
 	}
